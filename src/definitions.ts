@@ -6,7 +6,7 @@ declare module '@capacitor/core' {
 
 export interface RemoteConfigPlugin {
 
-  fetch(options: {
+  fetch(options?: {
     expirationDuration?: number,
   }): Promise<{}>;
 
