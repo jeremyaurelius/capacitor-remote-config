@@ -9,9 +9,9 @@ Add your `GoogleService-Info.plist` file to the `ios/App/App` folder.
 
 ### Android
 Add your `google-services.json` file to the `android/App` folder.
-After installing and syncing the plugin through yarn/npm, add the plugin to `MainActivity.java`.
+After installing and syncing the plugin through yarn/npm, add it to `MainActivity.java`.
 ```java
-// ... Other Imports
+// ...
 import com.jairemix.capacitor.firebase.RemoteConfigPlugin;
 
 public class MainActivity extends BridgeActivity {
