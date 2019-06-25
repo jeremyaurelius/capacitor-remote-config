@@ -12,19 +12,30 @@ public class RemoteConfigPlugin: CAPPlugin {
   let remoteConfig = RemoteConfig.remoteConfig();
     
   @objc func fetch(_ call: CAPPluginCall) {
-    remoteConfig.fetch { (status: RemoteConfigFetchStatus, error: Error?) in
+    let expirationDuration = call.getDouble("expirationDuration");
+    
+    
+    let completionHandler = {(status: RemoteConfigFetchStatus, error: Error?) in
+      let statusString = self.statusToString(status);
       if (error == nil) {
-        print("[CapacitorRemoteConfig] fetch");
-        call.success();
+        call.success([
+          "status": statusString
+        ]);
       } else {
         call.error(error!.localizedDescription, error!);
       }
+    };
+    
+    if let expirationDuration = expirationDuration {
+      print("[CapacitorRemoteConfig] fetch with expirationDuration: " + expirationDuration.description);
+      self.remoteConfig.fetch(withExpirationDuration: expirationDuration, completionHandler: completionHandler);
+    } else {
+      self.remoteConfig.fetch(completionHandler: completionHandler);
     }
   }
   
   @objc func activateFetched(_ call: CAPPluginCall) {
-    let activated = remoteConfig.activateFetched();
-    print("[CapacitorRemoteConfig] activateFetched. activated " + activated.description);
+    let activated = self.remoteConfig.activateFetched();
     call.success([
       "activated": activated
     ]);
@@ -32,7 +43,7 @@ public class RemoteConfigPlugin: CAPPlugin {
   
   @objc func getStrings(_ call: CAPPluginCall) {
     let keys = call.getArray("keys", String.self);
-    print("[CapacitorRemoteConfig] getStrings. keys: " + keys.debugDescription);
+//    print("[CapacitorRemoteConfig] getStrings. keys: " + keys.debugDescription);
     
     if (keys == nil || keys!.count == 0) {
       call.error("[GET_STRINGS] NO_KEYS")
@@ -40,7 +51,7 @@ public class RemoteConfigPlugin: CAPPlugin {
     }
     
     let values = keys!.map({ (key: String) -> String in
-      let value = remoteConfig.configValue(forKey: key);
+      let value = self.remoteConfig.configValue(forKey: key);
       return value.stringValue ?? "";
     });
     
@@ -49,5 +60,36 @@ public class RemoteConfigPlugin: CAPPlugin {
     ]);
     
   }
-    
+  
+  @objc func getLastFetchStatus(_ call: CAPPluginCall) {
+    let statusString = self.statusToString(remoteConfig.lastFetchStatus);
+    call.success([
+      "status": statusString
+    ]);
+  }
+  
+  private func statusToString(_ status: RemoteConfigFetchStatus) -> String {
+    switch (status) {
+      case RemoteConfigFetchStatus.noFetchYet: return "noFetchYet";
+      case RemoteConfigFetchStatus.success: return "success";
+      case RemoteConfigFetchStatus.throttled: return "throttled";
+      case RemoteConfigFetchStatus.failure: return "failure";
+      default: return "";
+    }
+  }
+  
+  @objc func getLastFetchTime(_ call: CAPPluginCall) {
+    let time = self.remoteConfig.lastFetchTime;
+    if let time = time {
+      let dateFormatter = ISO8601DateFormatter();
+      dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds];
+      let dateString = dateFormatter.string(from: time);
+      call.success([
+        "lastFetchTime": dateString
+      ]);
+    } else {
+      call.success([:]);
+    }
+  }
+
 }

@@ -7,4 +7,6 @@ CAP_PLUGIN(RemoteConfigPlugin, "RemoteConfigPlugin",
            CAP_PLUGIN_METHOD(fetch, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(activateFetched, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getStrings, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getLastFetchStatus, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getLastFetchTime, CAPPluginReturnPromise);
 )

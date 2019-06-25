@@ -4,7 +4,9 @@ declare module '@capacitor/core' {
     }
 }
 export interface RemoteConfigPlugin {
-    fetch(): Promise<{}>;
+    fetch(options: {
+        expirationDuration?: number;
+    }): Promise<{}>;
     activateFetched(): Promise<{
         activated: boolean;
     }>;

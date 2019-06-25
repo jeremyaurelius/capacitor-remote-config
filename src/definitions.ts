@@ -5,7 +5,12 @@ declare module '@capacitor/core' {
 }
 
 export interface RemoteConfigPlugin {
-  fetch(): Promise<{}>;
+
+  fetch(options: {
+    expirationDuration?: number,
+  }): Promise<{
+    status: FetchStatus
+  }>;
 
   activateFetched(): Promise<{ activated: boolean }>
 
@@ -14,4 +19,22 @@ export interface RemoteConfigPlugin {
   }): Promise<{
     values: any[]
   }>;
+
+  getLastFetchStatus(): Promise<{
+    status: FetchStatus
+  }>;
+
+  /**
+   * get last time fetch made, formatted as an ISO date
+   */
+  getLastFetchTime(): Promise<{
+    lastFetchTime: string; 
+  }>;
+
 }
+
+export type FetchStatus = 
+  'noFetchYet' |
+  'success' |
+  'throttled' |
+  'failure';
