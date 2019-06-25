@@ -15,7 +15,7 @@ export interface RemoteConfigPlugin {
   getStrings(options: {
     keys: string[],
   }): Promise<{
-    values: any[]
+    values: string[],
   }>;
 
   getInfo(): Promise<{
