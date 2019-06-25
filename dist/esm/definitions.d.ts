@@ -15,4 +15,15 @@ export interface RemoteConfigPlugin {
     }): Promise<{
         values: any[];
     }>;
+    getInfo(): Promise<{
+        lastFetchStatus: FetchStatus;
+        /**
+         * time last fetch made, formatted as an ISO date
+         */
+        lastFetchTime: string;
+    }>;
+    useAndroidSettings?(options: {
+        developerMode?: boolean;
+    }): Promise<{}>;
 }
+export declare type FetchStatus = 'noFetchYet' | 'success' | 'throttled' | 'failure';

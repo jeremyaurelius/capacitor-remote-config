@@ -8,9 +8,7 @@ export interface RemoteConfigPlugin {
 
   fetch(options: {
     expirationDuration?: number,
-  }): Promise<{
-    status: FetchStatus
-  }>;
+  }): Promise<{}>;
 
   activateFetched(): Promise<{ activated: boolean }>
 
@@ -20,16 +18,17 @@ export interface RemoteConfigPlugin {
     values: any[]
   }>;
 
-  getLastFetchStatus(): Promise<{
-    status: FetchStatus
+  getInfo(): Promise<{
+    lastFetchStatus: FetchStatus,
+    /**
+     * time last fetch made, formatted as an ISO date
+     */
+    lastFetchTime: string,
   }>;
 
-  /**
-   * get last time fetch made, formatted as an ISO date
-   */
-  getLastFetchTime(): Promise<{
-    lastFetchTime: string; 
-  }>;
+  useAndroidSettings?(options: {
+    developerMode?: boolean,
+  }): Promise<{}>;
 
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 import Capacitor
+import FirebaseCore
 import FirebaseRemoteConfig
 
 /**
@@ -10,10 +11,15 @@ import FirebaseRemoteConfig
 public class RemoteConfigPlugin: CAPPlugin {
   
   let remoteConfig = RemoteConfig.remoteConfig();
+
+  public override func load() {
+    if (FirebaseApp.app() == nil) {
+      FirebaseApp.configure();
+    }
+  }
     
   @objc func fetch(_ call: CAPPluginCall) {
     let expirationDuration = call.getDouble("expirationDuration");
-    
     
     let completionHandler = {(status: RemoteConfigFetchStatus, error: Error?) in
       let statusString = self.statusToString(status);
@@ -61,11 +67,18 @@ public class RemoteConfigPlugin: CAPPlugin {
     
   }
   
-  @objc func getLastFetchStatus(_ call: CAPPluginCall) {
+  @objc func getInfo(_ call: CAPPluginCall) {
     let statusString = self.statusToString(remoteConfig.lastFetchStatus);
-    call.success([
-      "status": statusString
-    ]);
+    
+    var pluginResult: PluginResultData = [
+      "lastFetchStatus": statusString
+    ];
+    
+    if let time = self.remoteConfig.lastFetchTime {
+      pluginResult["lastFetchTime"] = self.dateToISOString(time);
+    }
+    
+    call.success(pluginResult);
   }
   
   private func statusToString(_ status: RemoteConfigFetchStatus) -> String {
@@ -78,18 +91,10 @@ public class RemoteConfigPlugin: CAPPlugin {
     }
   }
   
-  @objc func getLastFetchTime(_ call: CAPPluginCall) {
-    let time = self.remoteConfig.lastFetchTime;
-    if let time = time {
-      let dateFormatter = ISO8601DateFormatter();
-      dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds];
-      let dateString = dateFormatter.string(from: time);
-      call.success([
-        "lastFetchTime": dateString
-      ]);
-    } else {
-      call.success([:]);
-    }
+  private func dateToISOString(_ date: Date) -> String {
+    let dateFormatter = ISO8601DateFormatter();
+    dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds];
+    return dateFormatter.string(from: date);
   }
 
 }
