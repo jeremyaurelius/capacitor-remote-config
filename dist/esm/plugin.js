@@ -1,3 +1,3 @@
 import { Plugins } from '@capacitor/core';
-export const remoteConfigPlugin = Plugins.RemoteConfigPlugin;
+export var remoteConfigPlugin = Plugins.RemoteConfigPlugin;
 //# sourceMappingURL=plugin.js.map
