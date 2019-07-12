@@ -11,7 +11,5 @@
     s.ios.deployment_target  = '11.0'
     s.static_framework = true
     s.dependency 'Capacitor'
-    s.dependency 'Firebase'
-    s.dependency 'Firebase/Core'
-    s.dependency 'Firebase/RemoteConfig'
+    s.dependency 'Firebase/RemoteConfig', '6.2.0'
   end
